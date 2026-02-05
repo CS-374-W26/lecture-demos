@@ -1,9 +1,11 @@
+#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/wait.h>
 
 int main() {
+	int result = putenv("MY_COOL_ENVIRONMENT_VARIABLE=hello");
 	pid_t fork_result = fork();
 	// Here, we now have TWO processes that will run everything
 	// below this line of code
@@ -14,6 +16,10 @@ int main() {
 		//char* arguments[] = {"ls", "fjdsajfdsaj", "--color=auto", NULL};
 		//execvp("ls", arguments);
 		
+		char* value = getenv("MY_COOL_ENVIRONMENT_VARIABLE");
+		printf("%s\n", value);
+
+		pid_t my_pid = getpid();
 		char* arguments[] = {"./die", NULL};
 		execvp("./die", arguments);
 	} else {
