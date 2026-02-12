@@ -4,8 +4,6 @@
 
 volatile sig_atomic_t state = 0;
 
-// This signal handler is non-reentrant.
-// Reentrant: 
 void sigint_handler(int signo) {
 	if (signo == SIGINT) {
 		write(1, "Hello, World!\n", 14);
@@ -38,6 +36,7 @@ int main() {
 	pause();
 
 	if (state == 0) {
+
 		// It's okay to check the value of the state, but
 		// not modify it, because that would make it
 		// non-reentrant
