@@ -33,24 +33,46 @@ int main(void) {
 	
 	while (1) {
 		int comm_socket_fd = accept(listening_socket_fd, NULL, NULL);
-		char message[256];
-		size_t total_bytes_read = 0;
-		do {
-			ssize_t bytes_read = read(
-				comm_socket_fd,
-				message + total_bytes_read,
-				256 - total_bytes_read
-			);
-			if (bytes_read == -1) {
-				printf("Error on read()\n");
-				exit(1);
-			}
-			total_bytes_read += bytes_read;
-		} while(message[total_bytes_read - 1] != '\0');
-	
-		printf("Message from client: %s.\n", message);
 
-		close(comm_socket_fd);
+		// Fork a new child process to handle the connection
+		pid_t fork_result = fork();
+		if (fork_result == 0) {
+			// This is the child process
+			char message[256];
+			size_t total_bytes_read = 0;
+			do {
+				ssize_t bytes_read = recv(
+					comm_socket_fd,
+					message + total_bytes_read,
+					256 - total_bytes_read,
+					0
+				);
+				if (bytes_read == -1) {
+					printf("Error on recv()\n");
+					exit(1);
+				}
+				total_bytes_read += bytes_read;
+			} while(message[total_bytes_read - 1] != '\0');
+		
+			// printf("Message from client: %s.\n", message);
+
+			char* message1 = strtok(message, "@");
+			char* message2 = strtok(NULL, "@");
+			printf("Message 1: %s", message1);
+			printf("Message 2: %s", message2);
+
+
+			// Use key to encrypt plaintext
+
+			// use send() to send the ciphertext back
+
+			close(comm_socket_fd);
+
+			exit(0);
+		} else {
+			// This is the parent process
+			close(comm_socket_fd);
+		}
 	}
 
 	

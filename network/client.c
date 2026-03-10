@@ -54,17 +54,35 @@ int main(void) {
 
 	freeaddrinfo(linked_list);
 
-	const char* message = "Hello";
-	size_t bytes_to_write = strlen(message) + 1;
+	const char* message = "Hello@";
+	size_t bytes_to_write = strlen(message);
 	ssize_t total_bytes_written = 0;
 	while (total_bytes_written < bytes_to_write) {
-		ssize_t bytes_written = write(
+		ssize_t bytes_written = send(
 			socket_fd,
 			message + total_bytes_written,
-			bytes_to_write - total_bytes_written
+			bytes_to_write - total_bytes_written,
+			0
 		);
 		if (bytes_written == -1) {
-			printf("Error on write()\n");
+			printf("Error on send()\n");
+			exit(1);
+		}
+		total_bytes_written += bytes_written;
+	}
+
+	const char* message2 = "World";
+	bytes_to_write = strlen(message2) + 1;
+	total_bytes_written = 0;
+	while (total_bytes_written < bytes_to_write) {
+		ssize_t bytes_written = send(
+			socket_fd,
+			message2 + total_bytes_written,
+			bytes_to_write - total_bytes_written,
+			0
+		);
+		if (bytes_written == -1) {
+			printf("Error on send()\n");
 			exit(1);
 		}
 		total_bytes_written += bytes_written;
